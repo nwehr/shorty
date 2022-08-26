@@ -20,7 +20,7 @@ type urlStore struct {
 
 func (s urlStore) getUrl(id string) (string, error) {
 	url := ""
-	err := s.rds.Do(context.Background(), radix.Cmd(&url, "GET", fmt.Sprintf("shortly:cache:%s", id)))
+	err := s.rds.Do(context.Background(), radix.Cmd(&url, "GET", fmt.Sprintf("shorty:cache:%s", id)))
 	if err != nil {
 		return url, err
 	}
@@ -36,7 +36,7 @@ func (s urlStore) getUrl(id string) (string, error) {
 			return "", err
 		}
 
-		err = s.rds.Do(context.Background(), radix.Cmd(nil, "SET", fmt.Sprintf("shortly:cache:%s", id), url, "EX", "60"))
+		err = s.rds.Do(context.Background(), radix.Cmd(nil, "SET", fmt.Sprintf("shorty:cache:%s", id), url, "EX", "60"))
 		if err != nil {
 			fmt.Printf("could not set cache: %s\n", err.Error())
 		}

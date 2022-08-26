@@ -4,16 +4,16 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/jackc/pgx/v4"
 	"github.com/mediocregopher/radix/v4"
 )
 
 type serverOptions struct {
-	protocol    string
-	hostname    string
+	publicUrl   string
 	postgresUrl string
-	redisUrl    string
+	redisUrls   []string
 
 	rds *radix.Cluster
 	pg  *pgx.Conn
@@ -27,25 +27,24 @@ type serverOptions struct {
 
 func getServerOptions(args []string) (serverOptions, error) {
 	opts := serverOptions{
-		protocol:         os.Getenv("PROTOCOL"),
-		hostname:         os.Getenv("HOSTNAME"),
-		postgresUrl:      os.Getenv("POSTGRES_URL"),
-		redisUrl:         os.Getenv("REDIS_URL"),
-		oauthRedirectURL: "http://localhost:48162/oauth/callback",
-		oauthAuthURL:     "https://github.com/login/oauth/authorize",
-		oauthTokenURL:    "https://github.com/login/oauth/access_token",
+		publicUrl:         os.Getenv("PUBLIC_URL"),
+		postgresUrl:       os.Getenv("POSTGRES_URL"),
+		redisUrls:         strings.Split(os.Getenv("REDIS_URL"), ","),
+		oauthClientID:     os.Getenv("OAUTH_CLIENT_ID"),
+		oauthClientSecret: os.Getenv("OAUTH_CLIENT_SECRET"),
+		oauthRedirectURL:  "http://localhost:48162/oauth/callback",
+		oauthAuthURL:      "https://github.com/login/oauth/authorize",
+		oauthTokenURL:     "https://github.com/login/oauth/access_token",
 	}
 
 	for i, arg := range args {
 		switch arg {
-		case "--protocol":
-			opts.protocol = args[i+1]
-		case "--hostname":
-			opts.hostname = args[i+1]
+		case "--public-url":
+			opts.publicUrl = args[i+1]
 		case "--postgres-url":
 			opts.postgresUrl = args[i+1]
 		case "--redis-url":
-			opts.redisUrl = args[i+1]
+			opts.redisUrls = strings.Split(args[i+1], ",")
 		case "--oauth-client-id":
 			opts.oauthClientID = args[i+1]
 		case "--oauth-client-secret":
@@ -63,7 +62,7 @@ func getServerOptions(args []string) (serverOptions, error) {
 	}
 
 	{
-		rds, err := (radix.ClusterConfig{}).New(context.Background(), []string{"redis"})
+		rds, err := (radix.ClusterConfig{}).New(context.Background(), opts.redisUrls)
 		if err != nil {
 			return opts, fmt.Errorf("unable to connect to redis: %v", err)
 		}

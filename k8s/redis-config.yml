@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: 
+  name: redis-config
+data: 
+  redis.conf: |
+    cluster-enabled yes
+    cluster-node-timeout 15000
+    cluster-config-file /data/cluster.conf
+    cluster-allow-reads-when-down yes
+    appendonly yes

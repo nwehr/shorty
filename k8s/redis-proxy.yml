@@ -1,0 +1,19 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-cluster-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-cluster-proxy
+  template:
+    metadata:
+      labels:
+        app: redis-cluster-proxy
+    spec:
+      containers:
+      - name: redis-cluster-proxy
+        image: kornrunner/redis-cluster-proxy
+        args: ["redis:6379"]

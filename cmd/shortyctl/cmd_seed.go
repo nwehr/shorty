@@ -34,7 +34,7 @@ func generateUniqueIds() {
 	})
 
 	for _, id := range ids {
-		fmt.Printf("redis-cli -c rpush shorty:ids %s\n", id.String(alphabet))
+		fmt.Printf("RPUSH shorty:ids %s\n", id.String(alphabet))
 	}
 }
 

@@ -212,7 +212,7 @@ func (s server) handleCreateShortLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res.URL = s.opts.protocol + "://" + s.opts.hostname + "/" + id
+	res.URL = s.opts.publicUrl + "/" + id
 	json.NewEncoder(w).Encode(res)
 }
 
