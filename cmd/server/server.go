@@ -6,13 +6,26 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"sync/atomic"
-	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 var (
-	numReqs  uint64
-	lastReqs uint64
+	reqeustsCounter = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "shorty_requests_total",
+		Help: "The total number of requests",
+	})
+
+	cacheMissesCounter = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "shorty_cache_misses_total",
+		Help: "The total number of cache misses",
+	})
+
+	errorCounter = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "shorty_errors_total",
+		Help: "The total number of errors",
+	})
 )
 
 func newServer(opts serverOptions) (server, error) {
@@ -34,16 +47,9 @@ type server struct {
 	opts serverOptions
 }
 
-func (s server) startCountingReqs() {
-	for {
-		time.Sleep(2 * time.Second)
-		fmt.Printf("%d reqs/s\n", (numReqs-lastReqs)/2)
-
-		lastReqs = numReqs
-	}
-}
-
 func (s server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	reqeustsCounter.Inc()
+
 	if r.Method == "GET" {
 		switch r.URL.Path {
 		case "/oauth/callback":
@@ -69,12 +75,14 @@ func (s server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s server) handleListShortUrls(w http.ResponseWriter, r *http.Request) {
 	u, err := s.getUser(r)
 	if err != nil {
+		errorCounter.Inc()
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	urls, err := s.urlStore.listUrlsByUserId(u.ID)
 	if err != nil {
+		errorCounter.Inc()
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -108,6 +116,7 @@ func (s server) handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	tokenResp, err := http.PostForm(s.opts.oauthTokenURL, tokenParams)
 	if err != nil {
+		errorCounter.Inc()
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -116,6 +125,7 @@ func (s server) handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	tokenRespBytes, err := ioutil.ReadAll(tokenResp.Body)
 	if err != nil {
+		errorCounter.Inc()
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -123,12 +133,14 @@ func (s server) handleCallback(w http.ResponseWriter, r *http.Request) {
 	// Reusing variable
 	tokenParams, err = url.ParseQuery(string(tokenRespBytes))
 	if err != nil {
+		errorCounter.Inc()
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	accessToken, ok := tokenParams["access_token"]
 	if !ok {
+		errorCounter.Inc()
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -138,6 +150,7 @@ func (s server) handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	userResp, err := http.DefaultClient.Do(userReq)
 	if err != nil {
+		errorCounter.Inc()
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -152,6 +165,7 @@ func (s server) handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	err = s.userStore.setUser(u)
 	if err != nil {
+		errorCounter.Inc()
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -160,16 +174,16 @@ func (s server) handleCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s server) handleRedirectShortLink(w http.ResponseWriter, r *http.Request) {
-	atomic.AddUint64(&numReqs, 1)
-
 	id := r.RequestURI[1:]
 	if len(id) != 4 {
+		errorCounter.Inc()
 		http.Error(w, "not found", http.StatusNotFound)
 		return
 	}
 
 	url, err := s.urlStore.getUrl(id)
 	if err != nil {
+		errorCounter.Inc()
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -180,6 +194,7 @@ func (s server) handleRedirectShortLink(w http.ResponseWriter, r *http.Request) 
 func (s server) handleCreateShortLink(w http.ResponseWriter, r *http.Request) {
 	u, err := s.getUser(r)
 	if err != nil {
+		errorCounter.Inc()
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
@@ -194,6 +209,7 @@ func (s server) handleCreateShortLink(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
+		errorCounter.Inc()
 		http.Error(w, "could not decode request", http.StatusInternalServerError)
 		return
 	}
@@ -202,12 +218,14 @@ func (s server) handleCreateShortLink(w http.ResponseWriter, r *http.Request) {
 
 	id, err := s.idStore.getNextID()
 	if err != nil {
+		errorCounter.Inc()
 		http.Error(w, "could not get next id", http.StatusInternalServerError)
 		return
 	}
 
 	err = s.urlStore.setUrl(u.ID, id, req.URL)
 	if err != nil {
+		errorCounter.Inc()
 		http.Error(w, "could not set store url", http.StatusInternalServerError)
 		return
 	}

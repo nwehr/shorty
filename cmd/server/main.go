@@ -5,17 +5,22 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
-	fmt.Println("reading options...")
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		http.ListenAndServe(":2112", nil)
+	}()
+
 	opts, err := getServerOptions(os.Args[1:])
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	fmt.Println("creating server...")
 	s, err := newServer(opts)
 	if err != nil {
 		fmt.Println(err)
@@ -24,11 +29,6 @@ func main() {
 
 	defer s.opts.pg.Close(context.Background())
 	defer s.opts.rds.Close()
-
-	fmt.Println("starting req counter...")
-	go s.startCountingReqs()
-
-	fmt.Println("listening on :8080")
 
 	if err := http.ListenAndServe(":8080", s); err != nil {
 		fmt.Println(err)

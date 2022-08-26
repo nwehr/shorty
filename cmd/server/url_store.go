@@ -26,6 +26,8 @@ func (s urlStore) getUrl(id string) (string, error) {
 	}
 
 	if url == "" {
+		cacheMissesCounter.Inc()
+
 		q := `
 			select url from urls where id = $1
 		`
