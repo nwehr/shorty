@@ -36,7 +36,7 @@ func (s urlStore) getUrl(id string) (string, error) {
 			return "", err
 		}
 
-		err = s.rds.Do(context.Background(), radix.Cmd(nil, "SET", fmt.Sprintf("shorty:cache:%s", id), url, "EX", "60"))
+		err = s.rds.Do(context.Background(), radix.Cmd(nil, "SET", fmt.Sprintf("shorty:cache:%s", id), url))
 		if err != nil {
 			fmt.Printf("could not set cache: %s\n", err.Error())
 		}

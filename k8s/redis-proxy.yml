@@ -16,4 +16,4 @@ spec:
       containers:
       - name: redis-cluster-proxy
         image: kornrunner/redis-cluster-proxy
-        args: ["redis:6379"]
+        args: ["redis-cluster:6379"]
