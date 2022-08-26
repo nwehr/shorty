@@ -208,7 +208,7 @@ func (s server) handleCreateShortLink(w http.ResponseWriter, r *http.Request) {
 
 	err = s.urlStore.setUrl(u.ID, id, req.URL)
 	if err != nil {
-		http.Error(w, "could not get store url", http.StatusInternalServerError)
+		http.Error(w, "could not set store url", http.StatusInternalServerError)
 		return
 	}
 

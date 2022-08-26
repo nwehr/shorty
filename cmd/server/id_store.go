@@ -12,6 +12,6 @@ type idStore struct {
 
 func (s idStore) getNextID() (string, error) {
 	id := ""
-	err := s.rds.Do(context.Background(), radix.Cmd(&id, "LPOP", "shortly:ids"))
+	err := s.rds.Do(context.Background(), radix.Cmd(&id, "LPOP", "shorty:ids"))
 	return id, err
 }
