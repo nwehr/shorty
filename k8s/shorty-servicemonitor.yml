@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: '2112'
+    prometheus.io/scrape: 'true'
+  name: be-release-default-gateway-metrics
+spec:
+  endpoints:
+    - interval: 15s
+      port: 2112
+  namespaceSelector:
+    matchNames:
+      - shorty
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: be-system-release-default-gateway
+      app.kubernetes.io/name: backend-system-gateway

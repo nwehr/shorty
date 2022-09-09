@@ -4,6 +4,9 @@ metadata:
   name: shorty
   labels:
     app: shorty
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '2112'
 spec:
   replicas: 3
   selector:
