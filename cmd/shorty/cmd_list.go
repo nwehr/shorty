@@ -22,15 +22,15 @@ func listCmd() error {
 
 	defer resp.Body.Close()
 
-	shortUrls := []struct {
-		ID  string
-		URL string
+	mappedURLS := []struct {
+		ShortURL string `json:"short_url"`
+		LongURL  string `json:"long_url"`
 	}{}
 
-	json.NewDecoder(resp.Body).Decode(&shortUrls)
+	json.NewDecoder(resp.Body).Decode(&mappedURLS)
 
-	for _, shortUrl := range shortUrls {
-		fmt.Printf("---\n%s/%s\n%s\n\n", cfg.Host, shortUrl.ID, shortUrl.URL)
+	for _, url := range mappedURLS {
+		fmt.Printf("---\n%s\n%s\n\n", url.ShortURL, url.LongURL)
 	}
 
 	return nil
