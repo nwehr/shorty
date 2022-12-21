@@ -165,7 +165,7 @@ func (s AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &cookie)
-	http.Redirect(w, r, "/admin", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, s.Opts.PublicURL+"/admin", http.StatusTemporaryRedirect)
 }
 
 func getAuthorization(r *http.Request) (Authorization, error) {
