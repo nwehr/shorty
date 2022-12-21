@@ -15,7 +15,7 @@ func createCmd(url string) error {
 	}
 
 	req := struct {
-		URL string `json:"url"`
+		URL string `json:"long_url"`
 	}{
 		URL: url,
 	}
