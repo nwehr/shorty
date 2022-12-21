@@ -64,11 +64,11 @@
         </form>
 
         <div>
-            <a href="/auth/logout">Logout, {{ .Username }}</a>
+            <a href="{{ .Opts.PublicURL }}/auth/logout">Logout, {{ .Username }}</a>
         </div>
         {{ else }}
         <div>
-            <a href="/auth/login">Login</a>
+            <a href="{{ .Opts.PublicURL }}/auth/login">Login</a>
         </div>
         {{ end }}
     </div>
@@ -87,7 +87,7 @@
         document.getElementById("myform").onsubmit = async (e) => {
             e.preventDefault();
             try {
-                const resp = await fetch(`/api/create`, { method: "POST", body: JSON.stringify({ long_url: document.getElementById("long_url").value }) })
+                const resp = await fetch(`{{ .Opts.PublicURL }}/api/create`, { method: "POST", body: JSON.stringify({ long_url: document.getElementById("long_url").value }) })
                 const json = await resp.json()
 
                 window.location.reload();
