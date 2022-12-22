@@ -19,6 +19,10 @@
         h4 {
             margin: .5em 0;
         }
+
+        /* input {
+            padding: .25em;
+        } */
         
         h4:first-child {
             margin-top: 0;
@@ -40,6 +44,10 @@
 
         .navbar>form {
             display: inline-block;
+        }
+
+        .navbar>form> input#long_url {
+            min-width: 30em;
         }
 
         .navbar>div {
@@ -80,6 +88,9 @@
 
         <h4>Redirects To</h4>
         <div><a href="{{ .LongURL }}">{{ .LongURL }}</a></div>
+
+        <h4>Visits</h4>
+        <div>{{ .Visits }}</div>
     </div>
     {{ end }}
     <script>
