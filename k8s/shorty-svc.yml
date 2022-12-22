@@ -13,19 +13,19 @@ spec:
   selector:
     app: shorty
   type: ClusterIP
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: prometheus
-spec:
-  endpoints:
-  - interval: 10s
-    targetPort: '2112'
-    path: /metrics
-  namespaceSelector:
-    matchNames:
-    - shorty
-  selector:
-    matchLabels:
-      app: shorty
+# ---
+# apiVersion: monitoring.coreos.com/v1
+# kind: ServiceMonitor
+# metadata:
+#   name: prometheus
+# spec:
+#   endpoints:
+#   - interval: 10s
+#     targetPort: '2112'
+#     path: /metrics
+#   namespaceSelector:
+#     matchNames:
+#     - shorty
+#   selector:
+#     matchLabels:
+#       app: shorty

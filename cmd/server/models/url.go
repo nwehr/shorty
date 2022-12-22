@@ -26,16 +26,9 @@ func (s URLMapStore) Get(key string) (URLMap, error) {
 		Key: key,
 	}
 
-	// err := s.RDS.Do(context.Background(), radix.Cmd(&m.LongURL, "GET", fmt.Sprintf("shorty:cache:%s", key)))
-	// if err != nil {
-	// 	return m, err
-	// }
-
 	if m.LongURL == "" {
-		// cacheMissesCounter.Inc()
-
 		q := `
-			select url, visits from urls where key = $1
+			update urls set visits = visits + 1 where key = $1 returning url, visits
 		`
 
 		err := s.PG.QueryRow(context.Background(), q, key).Scan(&m.LongURL, &m.Visits)
@@ -43,11 +36,6 @@ func (s URLMapStore) Get(key string) (URLMap, error) {
 			fmt.Printf("could not query database: %s\n", err.Error())
 			return m, err
 		}
-
-		// err = s.RDS.Do(context.Background(), radix.Cmd(nil, "SET", fmt.Sprintf("shorty:cache:%s", key), m.LongURL))
-		// if err != nil {
-		// 	fmt.Printf("could not set cache: %s\n", err.Error())
-		// }
 	}
 
 	return m, nil

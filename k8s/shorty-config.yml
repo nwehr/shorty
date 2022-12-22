@@ -1,7 +1,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata: 
-  name: oauth-config
+  name: default
 data: 
-  OAUTH_CLIENT_ID: ""
-  OAUTH_CLIENT_SECRET: ""
+  PUBLIC_URL: 
+  POSTGRES_URL: 
+  AUTHORIZATION_URL: 
+  TOKEN_URL: 
+  LOGOUT_URL: 
+  REDIRECT_URL: 
+  CLIENT_ID: 
+  CLIENT_SECRET: 
