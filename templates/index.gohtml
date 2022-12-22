@@ -14,16 +14,13 @@
 
         a {
             color: blue;
+            text-decoration: none;
         }
 
         h4 {
             margin: .5em 0;
         }
 
-        /* input {
-            padding: .25em;
-        } */
-        
         h4:first-child {
             margin-top: 0;
         }
@@ -46,7 +43,7 @@
             display: inline-block;
         }
 
-        .navbar>form> input#long_url {
+        .navbar>form>input#long_url {
             min-width: 30em;
         }
 
@@ -54,45 +51,55 @@
             display: inline-block;
         }
 
-        .urlmap {
+        div.content {
             padding: 1em;
-            margin: 1em;
+        }
+
+        .urlmap {
             border: solid 1px #d5d5d5;
             border-radius: .25em;
+            padding: 1em;
+        }
+
+
+        .footer {
+            color: #999;
+            font-weight: lighter;
+
+            text-align: center;
+
+            border-top: solid 1px #d5d5d5;
         }
     </style>
 </head>
 
 <body>
+    {{ if .LoggedIn }}
     <div class="navbar">
-        {{ if .LoggedIn }}
         <form id="myform">
             <input type="text" id="long_url" placeholder="Paste URL..." />
             <input type="submit" value="Create" />
         </form>
-
         <div>
             <a href="{{ .Opts.PublicURL }}/auth/logout">Logout, {{ .Username }}</a>
         </div>
-        {{ else }}
-        <div>
-            <a href="{{ .Opts.PublicURL }}/auth/login">Login</a>
-        </div>
-        {{ end }}
     </div>
 
     {{ range .URLs }}
-    <div class="urlmap">
-        <h4>Short URL</h4>
-        <div><a href="{{ $.Opts.PublicURL }}/{{ .Key }}">{{ $.Opts.PublicURL }}/{{ .Key }}</a></div>
+    <div class="content">
+        <div class="urlmap">
+            <h4>Short URL</h4>
+            <div><a href="{{ $.Opts.PublicURL }}/{{ .Key }}">{{ $.Opts.PublicURL }}/{{ .Key }}</a></div>
 
-        <h4>Redirects To</h4>
-        <div><a href="{{ .LongURL }}">{{ .LongURL }}</a></div>
+            <h4>Redirects To</h4>
+            <div><a href="{{ .LongURL }}">{{ .LongURL }}</a></div>
 
-        <h4>Visits</h4>
-        <div>{{ .Visits }}</div>
+            <h4>Visits</h4>
+            <div>{{ .Visits }}</div>
+        </div>
     </div>
     {{ end }}
+
     <script>
         document.getElementById("myform").onsubmit = async (e) => {
             e.preventDefault();
@@ -106,6 +113,32 @@
             }
         };
     </script>
+    {{ else }}
+    <div class="navbar">
+        <div>
+            <a href="{{ .Opts.PublicURL }}/auth/login">Login</a>
+        </div>
+    </div>
+    <div class="content">
+        <h3>Fast and Free</h3>
+        <p>Shorty is a free and open source url shortener. It's also fast, like, super fast.</p>
+
+        <h3>Secure</h3>
+        <p>Shorty integrates with any OAuth 2.0 provider that supports JWTs.</p>
+
+        <h3>Simple Statistics</h3>
+        <p>Shorty tracks the number of visits for your short links.</p>
+    </div>
+    {{ end }}
+
+    <div class="footer">
+        <div class="copyright">
+            <p>&copy; 2022 Nathan Wehr. All rights reserved.</p>
+        </div>
+        <div class="donation">
+            <p>BTC bc1qkm8gm3ggu8s4lnnc8mp0fahksp23u965hp758c RVN RSm7jfUjynsVptGyEDaW5yShiXbKBPsHNm</p>
+        </div>
+    </div>
 </body>
 
 </html>
