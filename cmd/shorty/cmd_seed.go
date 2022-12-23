@@ -7,7 +7,7 @@ import (
 )
 
 func generateUniqueIds() {
-	alphabet := []byte("abcdefghijklmnopqrstuvwxyz")
+	alphabet := []byte("abcdefghijklmnopqrstuvwxyz0123456789")
 
 	id := ID{0, 0, 0, 0}
 	end := ID{len(alphabet) - 1, len(alphabet) - 1, len(alphabet) - 1, len(alphabet) - 1}
@@ -28,16 +28,10 @@ func generateUniqueIds() {
 		ids[i], ids[j] = ids[j], ids[i]
 	})
 
-	fmt.Println(`insert into urls ("key") values `)
-	for i, id := range ids {
-		if i != 0 {
-			fmt.Print(", ")
-		}
-
-		fmt.Printf("('%s')\n", id.String(alphabet))
+	for _, id := range ids {
+		fmt.Println(id.String(alphabet))
+		// fmt.Printf("insert into urls (key) values ('%s');\n", id.String(alphabet))
 	}
-
-	fmt.Println(";")
 }
 
 type ID [4]int

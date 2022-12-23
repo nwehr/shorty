@@ -2,18 +2,15 @@
 
 Shorty is a url shortening service. 
 
-# Usage
-
-A demo of shorty runs at `https://errorcode.io/s`. 
-
-### Login
+# Docker Compose
 
 ```
-$ shorty login https://errorcode.io/s
+$ ./docker-compose up -d
 ```
 
-### Create short link
+Once the stack is up and running you can seed the database with unique keys. This must be done exactly once.
 
 ```
-$ shorty create 'https://example.com'
+$ ./docker-compose exec server sh
+# psql $POSTGRES_URL -c '\copy urls (key) from /sql/seed.csv csv;'
 ```
