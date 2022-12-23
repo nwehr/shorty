@@ -1,0 +1,13 @@
+{{ define "navbar" }}
+<nav class="navbar clearfix">
+    {{ if .LoggedIn }}
+    <form class="inline-block" id="myform">
+        <input type="text" id="long_url" placeholder="Paste URL..." />
+        <input type="submit" value="Create" />
+    </form>
+    <a class="float-right" href="{{ .Opts.PublicURL }}/auth/logout">Logout, {{ .Username }}</a>
+    {{ else }}
+    <a class="float-right" href="{{ .Opts.PublicURL }}/auth/login">Login</a>
+    {{ end }}
+</nav>
+{{ end }}

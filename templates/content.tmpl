@@ -1,0 +1,46 @@
+{{ define "content" }}
+    {{ if .LoggedIn }}
+        <div class="content">
+        {{ range .URLs }}
+            <div class="card">
+                <div class="card-body">
+                    <h4>Short URL</h4>
+                    <div><a href="{{ $.Opts.PublicURL }}/{{ .Key }}">{{ $.Opts.PublicURL }}/{{ .Key }}</a></div>
+
+                    <h4>Redirects To</h4>
+                    <div><a href="{{ .LongURL }}">{{ .LongURL }}</a></div>
+
+                    <h4>Visits</h4>
+                    <div>{{ .Visits }}</div>
+                </div>
+            </div>
+        {{ end }}
+        </div>
+
+        <script>
+            document.getElementById("myform").onsubmit = async (e) => {
+                e.preventDefault();
+                try {
+                    const resp = await fetch("{{ .Opts.PublicURL }}/api/create", { method: "POST", body: JSON.stringify({ long_url: document.getElementById("long_url").value }) })
+                    const json = await resp.json()
+
+                    window.location.reload();
+                } catch (e) {
+                    console.error(e)
+                }
+            };
+        </script>
+    {{ else }}
+        <div class="content">
+            <h3>Fast and Free</h3>
+            <p>Shorty is a free and open source url shortener. It's also fast, like, super fast.</p>
+
+            <h3>Secure</h3>
+            <p>Shorty integrates with any OAuth 2.0 provider that supports JWTs.</p>
+
+            <h3>Simple Statistics</h3>
+            <p>Shorty tracks the number of visits for your short links.</p>
+        </div>
+    {{ end }}
+
+{{ end }}

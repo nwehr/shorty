@@ -1,0 +1,80 @@
+{{ define "header" }}
+<head>
+    <meta charset="utf-8">
+    <title>Shorty</title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+
+            font-family: "Helvetica";
+        }
+
+        a {
+            color: rgb(88, 88, 194);
+            text-decoration: none;
+        }
+
+        h4 {
+            margin: .25em 0;
+        }
+        
+        h4:first-child {
+            margin-top: 0;
+        }
+
+        nav.navbar {
+            padding: 1em;
+            background: rgb(46, 46, 162);
+            color: white; 
+        }
+
+        nav.navbar a {
+            color: white;
+            text-decoration: none;
+        }
+
+        nav.navbar form input[type="text"] {
+            min-width: 25em;
+        }
+
+        .inline-block {
+            display: inline-block;
+        }
+
+        .float-right {
+            float: right;
+        }
+
+        .card {
+            border: solid 1px rgb(210, 210, 240);
+            border-radius: .25em;
+            padding: 1em;
+            margin-bottom: 1em;
+        }
+
+        .content {
+            padding: 1em;
+        }
+
+        .footer {
+            padding: 1em;
+            color: rgb(143, 143, 143);
+            font-weight: lighter;
+
+            text-align: center;
+        }
+
+        .clearfix {
+            overflow: auto;
+        }
+        
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+    </style>
+</head>
+{{ end }}

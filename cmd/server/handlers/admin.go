@@ -10,7 +10,7 @@ import (
 )
 
 type (
-	IndexPage struct {
+	PageData struct {
 		Opts     options.Options
 		URLs     []models.URLMap
 		LoggedIn bool
@@ -26,7 +26,7 @@ func Admin(opts options.Options) http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		t, err := template.ParseFiles("templates/index.gohtml")
+		t, err := template.ParseFiles("templates/index.tmpl", "templates/header.tmpl", "templates/footer.tmpl", "templates/navbar.tmpl", "templates/content.tmpl")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -37,7 +37,7 @@ func Admin(opts options.Options) http.HandlerFunc {
 			fmt.Println(err)
 		}
 
-		p := IndexPage{
+		data := PageData{
 			Opts:     opts,
 			LoggedIn: err == nil,
 			Issuer:   AccessToken(authorization.AccessToken).GetIssuer(),
@@ -45,14 +45,14 @@ func Admin(opts options.Options) http.HandlerFunc {
 		}
 
 		if err == nil {
-			p.URLs, err = store.List(p.Issuer)
+			data.URLs, err = store.List(data.Issuer)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		}
 
-		err = t.Execute(w, p)
+		err = t.Execute(w, data)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
