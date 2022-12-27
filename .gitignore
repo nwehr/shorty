@@ -1,3 +1,4 @@
 ./shorty
 ./shorty-server
 ./seed.txt
+.env
